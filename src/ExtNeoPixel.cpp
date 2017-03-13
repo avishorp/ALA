@@ -33,15 +33,40 @@
 
 #include "ExtNeoPixel.h"
 
-Adafruit_NeoPixel::Adafruit_NeoPixel(uint16_t n, uint8_t p, uint8_t t) : numLEDs(n), numBytes(n * 3), pin(p), pixels(NULL)
+uint8_t* Adafruit_NeoPixel::pixels = 0;
+int Adafruit_NeoPixel::common_buffer_size = 0;
+
+
+Adafruit_NeoPixel::Adafruit_NeoPixel(uint16_t n, uint8_t p, uint8_t t, AlaColor* ext_buffer) : numLEDs(n), numBytes(n * 3), pin(p)
   ,type(t), brightness(0), endTime(0)
 #ifdef __AVR__
   ,port(portOutputRegister(digitalPinToPort(p))),
    pinMask(digitalPinToBitMask(p))
 #endif
 {
-  if((pixels = (uint8_t *)malloc(numBytes))) {
-    memset(pixels, 0, numBytes);
+  // In this version, the actual pixel values are stored in an externally supplied
+  // buffer (ext_buffer). Before calling show(), the content of the external buffer
+  // is copied to an intermediate buffer, reordering RGB as necessary. The intermediate
+  // buffer is common to all instances of the class, in order to preserve memory.
+  
+  if (common_buffer_size == 0) {
+    // First time, allocate the buffer
+	pixels = (uint8_t *)malloc(numBytes);
+	common_buffer_size = n;
+  }
+  else {
+    // Common buffer already exists, check if it fits the required numbe of pixels
+	if (n > common_buffer_size) {
+	  // More pixels needed, reallocate
+	  free(pixels);
+      pixels = (uint8_t *)malloc(numBytes);
+	  common_buffer_size = n;
+	}
+  }
+  buffer = ext_buffer;
+  
+  if(pixels) {
+    memset(pixels, 0, common_buffer_size*3);
   }
   if(t & NEO_GRB) { // GRB vs RGB; might add others if needed
     rOffset = 1;
@@ -72,6 +97,11 @@ void Adafruit_NeoPixel::begin(void) {
 void Adafruit_NeoPixel::show(void) {
 
   if(!pixels) return;
+  
+  // Copy the pixels from the external buffer into the common buffer
+  int k;
+  for(k=0; k < numLEDs; k++)
+    setPixelColor(k, buffer[k].r, buffer[k].g, buffer[k].b);
 
   // Data latch = 50+ microsecond pause in the output stream.  Rather than
   // put a delay at the end of the function, the ending time is noted and

@@ -1,7 +1,7 @@
 #ifndef AlaLedRgb_h
 #define AlaLedRgb_h
 
-#include "Ala.h"
+#include "ExtNeoPixel.h"
 
 
 
@@ -111,6 +111,7 @@ private:
 	
 	float *pxPos;
 	float *pxSpeed;
+	Adafruit_NeoPixel *neopixels;
 
 };
 

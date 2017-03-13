@@ -19,6 +19,8 @@
 #ifndef ADAFRUIT_NEOPIXEL_H
 #define ADAFRUIT_NEOPIXEL_H
 
+#include "ala.h"
+
 #if (ARDUINO >= 100)
  #include <Arduino.h>
 #else
@@ -46,7 +48,7 @@ class Adafruit_NeoPixel {
  public:
 
   // Constructor: number of LEDs, pin number, LED type
-  Adafruit_NeoPixel(uint16_t n, uint8_t p=6, uint8_t t=NEO_GRB + NEO_KHZ800);
+  Adafruit_NeoPixel(uint16_t n, uint8_t p=6, uint8_t t=NEO_GRB + NEO_KHZ800, AlaColor* ext_buffer = 0);
   ~Adafruit_NeoPixel();
 
   void
@@ -77,7 +79,6 @@ class Adafruit_NeoPixel {
   uint8_t
     pin,           // Output pin number
     brightness,
-   *pixels,        // Holds LED color values (3 bytes each)
     rOffset,       // Index of red byte within each 3-byte pixel
     gOffset,       // Index of green byte
     bOffset;       // Index of blue byte
@@ -85,12 +86,18 @@ class Adafruit_NeoPixel {
     type;          // Pixel flags (400 vs 800 KHz, RGB vs GRB color)
   uint32_t
     endTime;       // Latch timing reference
+  AlaColor  *buffer;        // A pointer to an external buffer holding the LED color values
+
 #ifdef __AVR__
   const volatile uint8_t
     *port;         // Output PORT register
   uint8_t
     pinMask;       // Output PORT bitmask
 #endif
+
+private:
+	static uint8_t* pixels;
+	static int common_buffer_size;
 
 };
 

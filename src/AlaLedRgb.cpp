@@ -5,7 +5,6 @@
 #include "ExtTlc5940.h"
 
 
-Adafruit_NeoPixel *neopixels;
 
 
 
@@ -79,7 +78,7 @@ void AlaLedRgb::initWS2812(int numLeds, byte pin, byte type)
 	leds = (AlaColor *)malloc(3*numLeds);
 	memset(leds, 0, 3*numLeds);
 
-	neopixels = new Adafruit_NeoPixel(numLeds, pin, type);
+	neopixels = new Adafruit_NeoPixel(numLeds, pin, type, leds);
 	
 	neopixels->begin();
 }

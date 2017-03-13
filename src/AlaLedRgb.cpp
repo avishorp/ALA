@@ -668,8 +668,6 @@ void AlaLedRgb::fire()
 
 void AlaLedRgb::bouncingBalls()
 {
-	static long lastRefresh;
-
 	if (pxPos==NULL)
 	{
 		// allocate new arrays
@@ -722,8 +720,6 @@ void AlaLedRgb::bouncingBalls()
 
 void AlaLedRgb::bubbles()
 {
-	static long lastRefresh;
-
 	if (pxPos==NULL)
 	{
 		// allocate new arrays

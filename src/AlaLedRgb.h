@@ -112,7 +112,7 @@ private:
 	float *pxPos;
 	float *pxSpeed;
 	Adafruit_NeoPixel *neopixels;
-
+    long lastRefresh;
 };
 
 
